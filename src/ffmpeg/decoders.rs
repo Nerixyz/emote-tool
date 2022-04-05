@@ -3,7 +3,10 @@ use ffmpeg_next::{codec, decoder};
 pub fn open_decoder(stream: &ffmpeg_next::Stream) -> Result<decoder::Video, ffmpeg_next::Error> {
     let ctx = codec::Context::from_parameters(stream.parameters())?;
     match overwrite_decoder(ctx.id()) {
-        Some(codec) => ctx.decoder().open_as(codec).and_then(decoder::Opened::video),
+        Some(codec) => ctx
+            .decoder()
+            .open_as(codec)
+            .and_then(decoder::Opened::video),
         None => ctx.decoder().video(),
     }
 }

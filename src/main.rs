@@ -1,12 +1,9 @@
 #![warn(clippy::cargo)]
-
 #![allow(clippy::cast_possible_wrap)]
 #![allow(clippy::cast_precision_loss)]
 #![allow(clippy::cast_sign_loss)]
 #![allow(clippy::cast_possible_truncation)]
 #![allow(clippy::cast_lossless)]
-
-
 
 mod avif;
 mod cli;
@@ -17,14 +14,13 @@ mod webp;
 use crate::{
     avif::task::AvifEncoderTask,
     cli::{AvifCommand, Cli, CliCommand, IoOptions, WebpCommand},
-    ffmpeg::{formats::AcceptedFormats, frames::extract_frames},
+    ffmpeg::{formats::AcceptedFormats, frames::extract_frames, FfmpegError},
     task::EncoderTask,
     webp::task::WebpEncoderTask,
 };
 use clap::Parser;
 use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
 use std::{io, thread};
-use crate::ffmpeg::FfmpegError;
 
 #[derive(Debug, thiserror::Error)]
 enum TaskError {

@@ -25,7 +25,8 @@ impl AnimEncoderOptions {
     pub fn new() -> Option<Self> {
         unsafe {
             let mut opts = std::mem::MaybeUninit::uninit();
-            if sys::WebPAnimEncoderOptionsInitInternal(opts.as_mut_ptr(), sys::WEBP_MUX_ABI_VERSION) != 0
+            if sys::WebPAnimEncoderOptionsInitInternal(opts.as_mut_ptr(), sys::WEBP_MUX_ABI_VERSION)
+                != 0
             {
                 Some(Self {
                     opts: opts.assume_init(),
