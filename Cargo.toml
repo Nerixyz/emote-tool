@@ -1,0 +1,24 @@
+[package]
+name = "emote-tool"
+version = "0.1.0"
+edition = "2021"
+authors = ["Nerixyz"]
+description = "Convert videos and images to formats used by 7TV, BTTV and FFZ"
+repository = "https://github.com/Nerixyz/emote-tool"
+
+[dependencies]
+ffmpeg-next = "5.0.3"
+libavif-sys = { version = "0.12.1", features = ["codec-rav1e", "codec-aom"], default-features = false }
+clap = { version = "3.1", features = ["derive"] }
+crossbeam = "0.8"
+thiserror = "1.0"
+indicatif = "0.17.0-rc.10"
+num_cpus = "1.13"
+libwebp-sys = { version = "0.5", features = [] }
+concat-idents = "1.1"
+hex = "0.4"
+
+# avif encoding is really slow otherwise :/
+[profile.dev]
+opt-level = 3
+
