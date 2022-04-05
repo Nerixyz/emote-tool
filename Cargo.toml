@@ -5,6 +5,7 @@ edition = "2021"
 authors = ["Nerixyz"]
 description = "Convert videos and images to formats used by 7TV, BTTV and FFZ"
 repository = "https://github.com/Nerixyz/emote-tool"
+keywords = ["twitch", "7tv", "bttv", "ffz", "emote"]
 
 [dependencies]
 ffmpeg-next = "5.0.3"

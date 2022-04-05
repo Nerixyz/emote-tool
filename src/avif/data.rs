@@ -1,25 +1,25 @@
-//! Mostly the same as libavif-rs::AvifData, with the only difference that we don't create it
+//! Mostly the same as `libavif-rs::AvifData`, with the only difference that we don't create it
 //! so we know it's from libavif
 use libavif_sys as sys;
 
 pub struct AvifRwData {
-    data: sys::avifRWData,
+    inner: sys::avifRWData,
 }
 
 impl AvifRwData {
     /// Safety: `data` must be a valid value obtained from libavif
     /// which must have not been freed yet.
     pub(crate) unsafe fn from_raw(data: sys::avifRWData) -> Self {
-        Self { data }
+        Self { inner: data }
     }
 
     /// Extracts a slice containg the entire data without doing clones or allocation.
     pub fn as_slice(&self) -> &[u8] {
-        unsafe { std::slice::from_raw_parts(self.data.data, self.data.size) }
+        unsafe { std::slice::from_raw_parts(self.inner.data, self.inner.size) }
     }
 
     pub fn len(&self) -> usize {
-        self.data.size
+        self.inner.size
     }
 }
 
@@ -33,7 +33,7 @@ impl std::ops::Deref for AvifRwData {
 impl Drop for AvifRwData {
     fn drop(&mut self) {
         unsafe {
-            sys::avifRWDataFree(&mut self.data);
+            sys::avifRWDataFree(&mut self.inner);
         }
     }
 }

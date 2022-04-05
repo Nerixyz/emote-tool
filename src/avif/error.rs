@@ -4,7 +4,7 @@ use libavif_sys as sys;
 #[derive(Debug, Clone, thiserror::Error)]
 pub enum Error {
     #[error("UnknownError")]
-    UnknownError,
+    Unknown,
     #[error("InvalidFtyp")]
     InvalidFtyp,
     #[error("NoContent")]
@@ -46,7 +46,7 @@ pub enum Error {
     #[error("IoNotSet")]
     IoNotSet,
     #[error("IoError")]
-    IoError,
+    Io,
     #[error("WaitingOnIo")]
     WaitingOnIo,
     #[error("InvalidArgument")]
@@ -62,7 +62,7 @@ impl Error {
     pub(crate) fn from_code(code: std::os::raw::c_uint) -> Result<(), Error> {
         match code {
             sys::AVIF_RESULT_OK => Ok(()),
-            sys::AVIF_RESULT_UNKNOWN_ERROR => Err(Self::UnknownError),
+            sys::AVIF_RESULT_UNKNOWN_ERROR => Err(Self::Unknown),
             sys::AVIF_RESULT_INVALID_FTYP => Err(Self::InvalidFtyp),
             sys::AVIF_RESULT_NO_CONTENT => Err(Self::NoContent),
             sys::AVIF_RESULT_NO_YUV_FORMAT_SELECTED => Err(Self::NoYuvFormatSelected),
@@ -83,7 +83,7 @@ impl Error {
             sys::AVIF_RESULT_INVALID_CODEC_SPECIFIC_OPTION => Err(Self::InvalidCodecSpecificOption),
             sys::AVIF_RESULT_TRUNCATED_DATA => Err(Self::TruncatedData),
             sys::AVIF_RESULT_IO_NOT_SET => Err(Self::IoNotSet),
-            sys::AVIF_RESULT_IO_ERROR => Err(Self::IoError),
+            sys::AVIF_RESULT_IO_ERROR => Err(Self::Io),
             sys::AVIF_RESULT_WAITING_ON_IO => Err(Self::WaitingOnIo),
             sys::AVIF_RESULT_INVALID_ARGUMENT => Err(Self::InvalidArgument),
             sys::AVIF_RESULT_NOT_IMPLEMENTED => Err(Self::NotImplemented),

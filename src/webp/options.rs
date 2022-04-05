@@ -19,14 +19,13 @@ pub enum KeyframeDistance {
     AllFrames,
 }
 
-pub type ARGB = [u8; 4];
+pub type Argb = [u8; 4];
 
 impl AnimEncoderOptions {
     pub fn new() -> Option<Self> {
         unsafe {
             let mut opts = std::mem::MaybeUninit::uninit();
-            if sys::WebPAnimEncoderOptionsInitInternal(opts.as_mut_ptr(), sys::WEBP_MUX_ABI_VERSION)
-                != 0
+            if sys::WebPAnimEncoderOptionsInitInternal(opts.as_mut_ptr(), sys::WEBP_MUX_ABI_VERSION) != 0
             {
                 Some(Self {
                     opts: opts.assume_init(),
@@ -67,11 +66,11 @@ impl AnimEncoderOptions {
         self
     }
 
-    pub fn background_color(&self) -> ARGB {
+    pub fn background_color(&self) -> Argb {
         self.opts.anim_params.bgcolor.to_be_bytes()
     }
 
-    pub fn set_background_color(&mut self, color: ARGB) -> &mut Self {
+    pub fn set_background_color(&mut self, color: Argb) -> &mut Self {
         self.opts.anim_params.bgcolor = u32::from_be_bytes(color);
         self
     }
@@ -147,14 +146,14 @@ impl FromStr for KeyframeDistance {
             "disabled" => Ok(Self::Disabled),
             "allframes" | "all-frames" | "allFrames" | "all_frames" => Ok(Self::AllFrames),
             s if s.contains("..") => {
-                let mut iter = s.split("..").flat_map(|s| s.trim().parse::<u32>().ok());
+                let mut iter = s.split("..").filter_map(|s| s.trim().parse::<u32>().ok());
                 Ok(Self::MinMax(
                     iter.next().ok_or("no min")?,
                     iter.next().ok_or("no max")?,
                 ))
             }
             s if s.contains(',') => {
-                let mut iter = s.split(',').flat_map(|s| s.trim().parse::<u32>().ok());
+                let mut iter = s.split(',').filter_map(|s| s.trim().parse::<u32>().ok());
                 Ok(Self::MinMax(
                     iter.next().ok_or("no min")?,
                     iter.next().ok_or("no max")?,

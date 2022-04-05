@@ -1,4 +1,4 @@
-use crate::avif::{data::AvifRwData, flags::AddImageFlags, image::AvifImage, Codec};
+use crate::avif::{data::AvifRwData, flags::AddImage, image::AvifImage, Codec};
 use libavif_sys as sys;
 use libavif_sys::avifIOStats;
 use std::{
@@ -111,14 +111,14 @@ impl Encoder {
         image: &AvifImage,
         duration_in_timescales: u64,
     ) -> Result<(), super::Error> {
-        self.add_image_flags(image, duration_in_timescales, AddImageFlags::None)
+        self.add_image_flags(image, duration_in_timescales, AddImage::None)
     }
 
     pub fn add_image_flags(
         &mut self,
         image: &AvifImage,
         duration_in_timescales: u64,
-        flags: AddImageFlags,
+        flags: AddImage,
     ) -> Result<(), super::Error> {
         unsafe {
             super::Error::from_code(sys::avifEncoderAddImage(

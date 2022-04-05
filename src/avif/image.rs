@@ -34,7 +34,7 @@ impl<'a> BorrowedAvifImage<'a> {
         match format {
             Pixel::YUV420P | Pixel::YUV422P | Pixel::YUV444P => unsafe {
                 assert_eq!(frame.planes(), 3);
-                let mut image = create_raw_from_yuv_format(&frame, format)?;
+                let mut image = create_raw_from_yuv_format(frame, format)?;
 
                 for i in 0..3 {
                     image.as_mut().yuvPlanes[i] = frame.data_mut(i).as_mut_ptr();

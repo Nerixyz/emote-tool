@@ -10,5 +10,5 @@ pub mod task;
 mod types;
 
 pub use errors::*;
-pub use options::{KeyframeDistance, ARGB};
+pub use options::{KeyframeDistance, Argb};
 pub use types::*;

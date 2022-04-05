@@ -20,9 +20,9 @@ impl AcceptedFormats {
 
     pub fn select(&self, src_format: Pixel) -> Option<Pixel> {
         if is_alpha_format(src_format) {
-            self.alpha.get(0).map(|f| *f)
+            self.alpha.get(0).copied()
         } else {
-            self.regular.get(0).map(|f| *f)
+            self.regular.get(0).copied()
         }
     }
 }

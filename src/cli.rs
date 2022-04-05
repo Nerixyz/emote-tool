@@ -128,20 +128,20 @@ pub struct WebpOptions {
     pub loop_count: Option<i32>,
 }
 
-pub struct BackgroundColor(pub webp::ARGB);
+pub struct BackgroundColor(pub webp::Argb);
 
 impl FromStr for BackgroundColor {
     type Err = Cow<'static, str>;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        if s.starts_with('#') {
-            match s.len() {
-                7 => {
-                    let rgb = <[u8; 3]>::from_hex(&s[1..]).map_err(|e| e.to_string())?;
+        if let Some(hex) = s.strip_prefix('#') {
+            match hex.len() {
+                6 => {
+                    let rgb = <[u8; 3]>::from_hex(hex).map_err(|e| e.to_string())?;
                     Ok(Self([255, rgb[0], rgb[1], rgb[2]]))
                 }
-                9 => {
-                    let argb = <[u8; 4]>::from_hex(&s[1..]).map_err(|e| e.to_string())?;
+                8 => {
+                    let argb = <[u8; 4]>::from_hex(hex).map_err(|e| e.to_string())?;
                     Ok(Self(argb))
                 }
                 _ => Err("Expected #abcdef, or #abcdef01".into()),

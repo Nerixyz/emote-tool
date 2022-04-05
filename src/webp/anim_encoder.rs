@@ -56,7 +56,7 @@ impl<'a> AnimEncoder<'a> {
                 self.config.as_ptr(),
             ) == 0
             {
-                Err(errors::AnimEncoderError::last_error(&self.encoder))
+                Err(errors::AnimEncoderError::last_error(self.encoder))
             } else {
                 Ok(())
             }
@@ -68,7 +68,7 @@ impl<'a> AnimEncoder<'a> {
             self.add_image_internal(None, final_ts_ms)?;
             let mut data = WebpData::new();
             if sys::WebPAnimEncoderAssemble(self.encoder.as_ptr(), data.as_mut_ptr()) == 0 {
-                Err(errors::AnimEncoderError::last_error(&self.encoder))
+                Err(errors::AnimEncoderError::last_error(self.encoder))
             } else {
                 Ok(data)
             }

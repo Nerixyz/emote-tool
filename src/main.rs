@@ -1,3 +1,13 @@
+#![warn(clippy::cargo)]
+
+#![allow(clippy::cast_possible_wrap)]
+#![allow(clippy::cast_precision_loss)]
+#![allow(clippy::cast_sign_loss)]
+#![allow(clippy::cast_possible_truncation)]
+#![allow(clippy::cast_lossless)]
+
+
+
 mod avif;
 mod cli;
 mod ffmpeg;
@@ -35,12 +45,12 @@ fn main() -> Result<(), TaskError> {
     ffmpeg_next::log::set_level(ffmpeg_next::log::Level::Warning);
 
     match Cli::parse().command {
-        CliCommand::Avif(AvifCommand { io, opts }) => run_task::<AvifEncoderTask>(io, opts),
-        CliCommand::Webp(WebpCommand { io, opts }) => run_task::<WebpEncoderTask>(io, opts),
+        CliCommand::Avif(AvifCommand { io, opts }) => run_task::<AvifEncoderTask>(&io, opts),
+        CliCommand::Webp(WebpCommand { io, opts }) => run_task::<WebpEncoderTask>(&io, opts),
     }
 }
 
-fn run_task<T>(io_options: IoOptions, task_options: T::CliArgs) -> Result<(), TaskError>
+fn run_task<T>(io_options: &IoOptions, task_options: T::CliArgs) -> Result<(), TaskError>
 where
     T: EncoderTask,
 {

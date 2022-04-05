@@ -29,7 +29,7 @@ pub enum StillEncoderError {
 }
 
 impl AnimEncoderError {
-    pub(super) unsafe fn last_error(encoder: &NonNull<sys::WebPAnimEncoder>) -> Self {
+    pub(super) unsafe fn last_error(encoder: NonNull<sys::WebPAnimEncoder>) -> Self {
         let error = sys::WebPAnimEncoderGetError(encoder.as_ptr());
         match CStr::from_ptr(error).to_str() {
             Ok(str) => Self::EncoderError(str.to_string()),

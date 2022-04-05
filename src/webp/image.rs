@@ -86,7 +86,7 @@ impl<'a> WebpImage<'a> {
     }
 
     pub fn clone_stats(&self) -> Option<sys::WebPAuxStats> {
-        unsafe { NonNull::new(self.picture.stats).map(|p| p.as_ref().clone()) }
+        unsafe { NonNull::new(self.picture.stats).map(|p| *p.as_ref()) }
     }
 
     pub(super) unsafe fn as_mut_ptr(&mut self) -> *mut sys::WebPPicture {

@@ -135,7 +135,7 @@ fn make_encoder(config: &AvifEncoderConfig) -> Result<super::Encoder, AvifEncode
     let mut encoder = super::Encoder::new().ok_or(AvifEncoderError::CannotCreateEncoder)?;
     encoder
         .set_timescale(config.timescale)
-        .set_max_threads(config.args.max_threads.unwrap_or_else(|| num_cpus::get()))
+        .set_max_threads(config.args.max_threads.unwrap_or_else(num_cpus::get))
         .set_speed(config.args.speed)
         .set_codec(config.args.codec)
         .set_quantizer(config.args.quantizer)

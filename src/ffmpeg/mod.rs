@@ -69,10 +69,10 @@ pub fn emit_frames(
     };
 
     let mut decoded = frame::Video::empty();
-    for pack in input_ctx.packets().map(|p| Some(p)).chain(iter::once(None)) {
+    for pack in input_ctx.packets().map(Some).chain(iter::once(None)) {
         match pack {
             Some((stream, packet)) if stream.index() == istream_idx => {
-                decoder.send_packet(&packet)?
+                decoder.send_packet(&packet)?;
             }
             Some(_) => continue,
             None => decoder.send_eof()?,
