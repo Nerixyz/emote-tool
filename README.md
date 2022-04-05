@@ -19,3 +19,9 @@ emote-tool avif input.mp4 output
 ```
 
 For more information on flags, run `emote-tool help` or `emote-tool <format> -h`.
+
+# Planned Output Formats
+
+* JPEG XL/JXL
+* APNG/PNG
+* GIF
