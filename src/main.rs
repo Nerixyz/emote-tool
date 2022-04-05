@@ -16,6 +16,9 @@ use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
 use std::thread;
 
 fn main() {
+    ffmpeg_next::init().unwrap();
+    ffmpeg_next::log::set_level(ffmpeg_next::log::Level::Warning);
+
     match Cli::parse().command {
         CliCommand::Avif(AvifCommand { io, opts }) => run_task::<AvifEncoderTask, _>(io, opts),
         CliCommand::Webp(WebpCommand { io, opts }) => run_task::<WebpEncoderTask, _>(io, opts),
