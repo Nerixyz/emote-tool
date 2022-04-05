@@ -7,7 +7,7 @@ use std::{io, path::PathBuf};
 pub trait EncoderTask {
     type CliArgs;
     type Config: Send + 'static;
-    type ConfigError: std::error::Error;
+    type ConfigError: std::error::Error + 'static;
     type RunError: std::error::Error + Send + 'static;
     type EncoderStats: std::fmt::Display + Send + 'static;
 

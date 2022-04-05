@@ -13,29 +13,49 @@ use crate::{
 };
 use clap::Parser;
 use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
-use std::thread;
+use std::{io, thread};
+use crate::ffmpeg::FfmpegError;
 
-fn main() {
-    ffmpeg_next::init().unwrap();
+#[derive(Debug, thiserror::Error)]
+enum TaskError {
+    #[error("Couldn't initialize ffmpeg: {0}")]
+    FfmpegInitError(ffmpeg_next::Error),
+    #[error("Couldn't open input: {0}")]
+    FfmpegReadInputStream(FfmpegError),
+    #[error("Couldn't configure encoder task: {0}")]
+    ConfigurationError(Box<dyn std::error::Error>),
+    #[error("Couldn't open/create output file: {0}")]
+    IoOutputFileError(io::Error),
+    #[error("Couldn't calculate the total frames in the input.")]
+    NoFrames,
+}
+
+fn main() -> Result<(), TaskError> {
+    ffmpeg_next::init().map_err(TaskError::FfmpegInitError)?;
     ffmpeg_next::log::set_level(ffmpeg_next::log::Level::Warning);
 
     match Cli::parse().command {
-        CliCommand::Avif(AvifCommand { io, opts }) => run_task::<AvifEncoderTask, _>(io, opts),
-        CliCommand::Webp(WebpCommand { io, opts }) => run_task::<WebpEncoderTask, _>(io, opts),
+        CliCommand::Avif(AvifCommand { io, opts }) => run_task::<AvifEncoderTask>(io, opts),
+        CliCommand::Webp(WebpCommand { io, opts }) => run_task::<WebpEncoderTask>(io, opts),
     }
 }
 
-fn run_task<T, A>(io_options: IoOptions, task_options: A)
+fn run_task<T>(io_options: IoOptions, task_options: T::CliArgs) -> Result<(), TaskError>
 where
-    T: EncoderTask<CliArgs = A>,
+    T: EncoderTask,
 {
-    let (input_ctx, istream_idx) = ffmpeg::read_initial_stream(&io_options.input).unwrap();
+    let (input_ctx, istream_idx) =
+        ffmpeg::read_initial_stream(&io_options.input).map_err(TaskError::FfmpegReadInputStream)?;
+    // istream_idx is always valid
     let istream = input_ctx.stream(istream_idx).unwrap();
     let frames = extract_frames(&istream, &input_ctx);
-    assert!(frames > 0);
+    if frames < 0 {
+        return Err(TaskError::NoFrames);
+    }
     let frames = frames as u64;
 
-    let config = T::configure(task_options, &istream, &input_ctx).unwrap();
+    let config = T::configure(task_options, &istream, &input_ctx)
+        .map_err(|e| TaskError::ConfigurationError(Box::new(e)))?;
     let accepted_formats = AcceptedFormats::for_task::<T>();
 
     let out_file = T::make_output_path(&io_options.output);
@@ -44,7 +64,7 @@ where
         .append(false)
         .create(true)
         .open(&out_file)
-        .unwrap();
+        .map_err(TaskError::IoOutputFileError)?;
 
     let is_single_frame = istream.frames() == 1;
     let (frame_tx, frame_rx) = crossbeam::channel::bounded(if is_single_frame { 1 } else { 20 });
@@ -96,4 +116,6 @@ where
         eprintln!("Some thread panicked or returned an error!");
         std::process::exit(-1);
     }
+
+    Ok(())
 }
