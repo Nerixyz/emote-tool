@@ -1,13 +1,15 @@
+mod decoders;
 pub mod formats;
 pub mod frames;
 pub mod types;
 
 use crate::ffmpeg::{
+    decoders::open_decoder,
     formats::AcceptedFormats,
     types::{FrameData, TimingData},
 };
 use crossbeam::channel::Sender;
-use ffmpeg_next::{codec, format, format::Pixel, frame, media::Type, software::scaling};
+use ffmpeg_next::{format, format::Pixel, frame, media::Type, software::scaling};
 use indicatif::ProgressBar;
 use std::{iter, path::Path};
 
@@ -48,8 +50,7 @@ pub fn emit_frames(
 
     progress.set_length(istream.frames() as u64);
 
-    let ctx = codec::Context::from_parameters(istream.parameters())?;
-    let mut decoder = ctx.decoder().video()?;
+    let mut decoder = open_decoder(&istream)?;
 
     let mut scaler = if accepted_formats.passes(decoder.format()) {
         None
